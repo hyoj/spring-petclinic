@@ -39,11 +39,10 @@ import java.util.Map;
 class OwnerController {
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
-    private final OwnerRepository owners;
+    private final OwnerService ownerService;
 
-
-    public OwnerController(OwnerRepository clinicService) {
-        this.owners = clinicService;
+    OwnerController(OwnerService ownerService) {
+        this.ownerService = ownerService;
     }
 
     @InitBinder
@@ -62,10 +61,8 @@ class OwnerController {
     public String processCreationForm(@Valid Owner owner, BindingResult result) {
         if (result.hasErrors()) {
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
-        } else {
-            this.owners.save(owner);
-            return "redirect:/owners/" + owner.getId();
         }
+        return "redirect:/owners/" + ownerService.save(owner).getId();
     }
 
     @GetMapping("/owners/find")
@@ -83,7 +80,7 @@ class OwnerController {
         }
 
         // find owners by last name
-        Collection<Owner> results = this.owners.findByLastName(owner.getLastName());
+        Collection<Owner> results = this.ownerService.findByLastName(owner.getLastName());
         if (results.isEmpty()) {
             // no owners found
             result.rejectValue("lastName", "notFound", "not found");
@@ -101,7 +98,7 @@ class OwnerController {
 
     @GetMapping("/owners/{ownerId}/edit")
     public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
-        Owner owner = this.owners.findById(ownerId);
+        Owner owner = this.ownerService.findById(ownerId);
         model.addAttribute(owner);
         return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
     }
@@ -110,11 +107,11 @@ class OwnerController {
     public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId) {
         if (result.hasErrors()) {
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
-        } else {
-            owner.setId(ownerId);
-            this.owners.save(owner);
-            return "redirect:/owners/{ownerId}";
         }
+
+        owner.setId(ownerId);
+        this.ownerService.save(owner);
+        return "redirect:/owners/{ownerId}";
     }
 
     /**
@@ -126,7 +123,7 @@ class OwnerController {
     @GetMapping("/owners/{ownerId}")
     public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
         ModelAndView mav = new ModelAndView("owners/ownerDetails");
-        mav.addObject(this.owners.findById(ownerId));
+        mav.addObject(this.ownerService.findById(ownerId));
         return mav;
     }
 

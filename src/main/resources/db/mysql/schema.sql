@@ -63,3 +63,11 @@ CREATE TABLE IF NOT EXISTS visits (
   description VARCHAR(255),
   FOREIGN KEY (pet_id) REFERENCES pets(id)
 ) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS owner_privacy_change_hist (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  owner_id INT(4) UNSIGNED NOT NULL,
+  change_type VARCHAR(10),
+  change_date DATE,
+  FOREIGN KEY (owner_id) REFERENCES owner(id)
+) engine=InnoDB;

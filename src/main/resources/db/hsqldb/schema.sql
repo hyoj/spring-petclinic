@@ -5,6 +5,7 @@ DROP TABLE visits IF EXISTS;
 DROP TABLE pets IF EXISTS;
 DROP TABLE types IF EXISTS;
 DROP TABLE owners IF EXISTS;
+DROP TABLE owner_privacy_change_hist IF EXISTS;
 
 
 CREATE TABLE vets (
@@ -62,3 +63,12 @@ CREATE TABLE visits (
 );
 ALTER TABLE visits ADD CONSTRAINT fk_visits_pets FOREIGN KEY (pet_id) REFERENCES pets (id);
 CREATE INDEX visits_pet_id ON visits (pet_id);
+
+CREATE TABLE owner_privacy_change_hist (
+  id           INTEGER IDENTITY PRIMARY KEY,
+  owner_id     INTEGER NOT NULL,
+  change_type  VARCHAR(10),
+  change_time  DATE
+);
+ALTER TABLE owner_privacy_change_hist ADD CONSTRAINT fk_owners FOREIGN KEY (owner_id) REFERENCES owners (id);
+CREATE INDEX owner_privacy_change_hist_id ON owner_privacy_change_hist (owner_id);
